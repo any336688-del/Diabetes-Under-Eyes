@@ -1,0 +1,764 @@
+محدث03
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>السكري تحت المراقبة</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d9488;
+            --secondary-color: #0f766e;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 90px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.2s;
+            margin-top: 5px;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* تنسيق أزرار شريط السجل */
+        .log-actions {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        @media (min-width: 480px) {
+            .log-actions {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .action-btn {
+            padding: 10px 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: opacity 0.2s;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-export {
+            background-color: #64748b;
+            color: white;
+        }
+
+        .btn-clear-sugar {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .btn-clear-calc {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .badge-normal { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .log-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 4px;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            border-top: 1px solid #e2e8f0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.7rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item i {
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>السكري تحت المراقبة</h2>
+        <p style="font-size: 0.85rem; opacity: 0.9;">متابعة يومية، حاسبات محفوظة، وتقارير</p>
+    </header>
+
+    <div class="container">
+        
+        <!-- Page 1: Dashboard -->
+        <div id="page-home" class="page active">
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-chart-line"></i><span>الملخص اليومي</span></div>
+                <div class="grid-2">
+                    <div style="text-align: center; border-left: 1px solid #e2e8f0;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">آخر قراءة سكر</span>
+                        <h2 id="dash-sugar">- <span style="font-size: 0.9rem;">ملغ/دسل</span></h2>
+                    </div>
+                    <div style="text-align: center;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">الحالة العامة</span>
+                        <div><span id="dash-status" class="status-badge badge-normal">لا توجد بيانات</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Water Tracker Card -->
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-droplet" style="color: #0ea5e9;"></i><span>تتبع شرب الماء</span></div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">الهدف اليومي: 8 أكواب (2 لتر)</p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span id="water-count" style="font-size: 1.1rem; font-weight: bold;">0 / 8 أكواب</span>
+                    <div>
+                        <button class="btn" style="padding: 6px 12px; display: inline-block; width: auto;" onclick="addWater()">+ كوب</button>
+                        <button class="btn" style="padding: 6px 12px; display: inline-block; width: auto; background-color: #64748b;" onclick="resetWater()">إعادة ضبط</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculators Card -->
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-calculator"></i><span>الحاسبات الطبية (تُحفظ في السجل تلقائياً)</span></div>
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>الوزن (كغ)</label>
+                        <input type="number" id="bmi-weight" placeholder="مثال: 75">
+                    </div>
+                    <div class="input-group">
+                        <label>الطول (سم)</label>
+                        <input type="number" id="bmi-height" placeholder="مثال: 170">
+                    </div>
+                </div>
+                <button class="btn" onclick="calculateBMI()">احسب واحفظ مؤشر كتلة الجسم (BMI)</button>
+                <div id="bmi-result" style="margin-top:10px; font-weight:600; text-align:center; font-size: 0.9rem;"></div>
+                
+                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #e2e8f0;">
+                
+                <div class="input-group">
+                    <label>متوسط قراءات السكر الأخيرة (ملغ/دسل)</label>
+                    <input type="number" id="avg-sugar" placeholder="مثال: 150">
+                </div>
+                <button class="btn" style="background-color: #64748b;" onclick="calculateA1C()">احسب واحفظ السكر التراكمي (eAG)</button>
+                <div id="a1c-result" style="margin-top:10px; font-weight:600; text-align:center; font-size: 0.9rem;"></div>
+            </div>
+
+            <!-- صورة الصفحة الرئيسية (طفولة سعيدة ومشرقة) -->
+            <div class="card" style="text-align: center; padding: 15px;">
+                <div class="card-title" style="justify-content: center;"><i class="fa-solid fa-child-reaching" style="color: #0d9488;"></i><span>ابتسامة أطفالنا هي أمل الغد</span></div>
+                <div style="border-radius: 12px; overflow: hidden; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.08);">
+                    <img src="https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=600&q=80" alt="طفولة سعيدة" style="width: 100%; height: 160px; object-fit: cover; display: block;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 2: Log Sugar & Reports -->
+        <div id="page-log" class="page">
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-plus"></i><span>تسجيل قراءة سكر جديدة</span></div>
+                <div class="input-group">
+                    <label>قراءة مستوى السكر (ملغ/دسل)</label>
+                    <input type="number" id="sugar-value" placeholder="أدخل القراءة بالملغ/دسل">
+                </div>
+                <div class="input-group">
+                    <label>توقيت الفحص</label>
+                    <select id="sugar-time">
+                        <option value="fasting">صائم (8 ساعات نوم على الأقل)</option>
+                        <option value="post-meal">بعد الأكل بساعتين</option>
+                        <option value="random">عشوائي</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="addSugarLog()">حفظ القراءة في قاعدة البيانات</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-history"></i><span>السجل الشامل والتقارير</span></div>
+                
+                <div class="log-actions">
+                    <button class="action-btn btn-export" onclick="exportTXT()">
+                        <i class="fa-solid fa-file-arrow-down"></i> تصدير TXT
+                    </button>
+                    <button class="action-btn btn-clear-sugar" onclick="clearSugarLogs()">
+                        <i class="fa-solid fa-trash-can"></i> مسح سجل قراءات السكري
+                    </button>
+                    <button class="action-btn btn-clear-calc" onclick="clearCalculatorLogs()">
+                        <i class="fa-solid fa-trash-can"></i> مسح سجل الحاسبات
+                    </button>
+                </div>
+
+                <div id="log-container">
+                    <p style="color:var(--text-muted); text-align:center; font-size:0.9rem;">لم يتم تسجيل بيانات بعد.</p>
+                </div>
+            </div>
+
+            <!-- صورة صفحة السجل (أطفال يلعبون بمرح) -->
+            <div class="card" style="text-align: center; padding: 15px;">
+                <div class="card-title" style="justify-content: center;"><i class="fa-solid fa-face-smile" style="color: #0d9488;"></i><span>نمو صحي وطفولة مليئة بالحيوية</span></div>
+                <div style="border-radius: 12px; overflow: hidden; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.08);">
+                    <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80" alt="أطفال سعداء" style="width: 100%; height: 160px; object-fit: cover; display: block;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 3: Medications Schedule -->
+        <div id="page-meds" class="page">
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-pills"></i><span>جدول مواعيد الأدوية والجرعات</span></div>
+                <div class="input-group">
+                    <label>اسم الدواء / الإنسولين</label>
+                    <input type="text" id="med-name" placeholder="مثال: ميتفورمين / جلوكوفاج">
+                </div>
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>الجرعة</label>
+                        <input type="text" id="med-dose" placeholder="مثال: 500 ملغ">
+                    </div>
+                    <div class="input-group">
+                        <label>وقت الجرعة</label>
+                        <input type="time" id="med-time">
+                    </div>
+                </div>
+                <button class="btn" onclick="addMedication()">إضافة للجدول وحفظه</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-clock"></i><span>الأدوية المسجلة</span></div>
+                <div id="meds-container">
+                    <p style="color:var(--text-muted); text-align:center; font-size:0.9rem;">لا توجد أدوية مسجلة حالياً.</p>
+                </div>
+            </div>
+
+            <!-- صورة صفحة الأدوية (براءة الطفولة واللعب) -->
+            <div class="card" style="text-align: center; padding: 15px;">
+                <div class="card-title" style="justify-content: center;"><i class="fa-solid fa-children" style="color: #0d9488;"></i><span>رعاية مستمرة لطفولة آمنة ومبدعة</span></div>
+                <div style="border-radius: 12px; overflow: hidden; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.08);">
+                    <img src="https://images.unsplash.com/photo-1472162072942-cd5147eb3902?auto=format&fit=crop&w=600&q=80" alt="أطفال يضحكون ويلعبون" style="width: 100%; height: 160px; object-fit: cover; display: block;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 4: Tips & Medical Guidelines (الإرشادات) -->
+        <div id="page-tips" class="page">
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-stethoscope" style="color: var(--primary-color);"></i><span>الإرشادات الطبية الحديثة</span></div>
+                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 15px;">
+                    أحدث التوصيات الطبية المعتمدة من استشاريي الغدد الصماء والسكري لضمان حياة صحية مستقرة والوقاية من المضاعفات:
+                </p>
+
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border-right: 4px solid var(--primary-color);">
+                        <strong style="display: block; margin-bottom: 5px; color: var(--secondary-color);">1. تنظيم توقيت وجبات الكربوهيدرات</strong>
+                        <span style="font-size: 0.85rem; line-height: 1.5; color: var(--text-main);">ينصح الأطباء بتقسيم وجبات النشويات على مدار اليوم وعدم تناول كميات كبيرة دفعة واحدة لمنع الارتفاع المفاجئ لسكر الدم.</span>
+                    </div>
+
+                    <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border-right: 4px solid var(--warning);">
+                        <strong style="display: block; margin-bottom: 5px; color: var(--warning);">2. الرياضة الخفيفة بعد الأكل</strong>
+                        <span style="font-size: 0.85rem; line-height: 1.5; color: var(--text-main);">المشي لمدة 15 إلى 20 دقيقة بعد وجبة الغداء أو العشاء يساعد العضلات على امتصاص الجلوكوز بشكل طبيعي دون الحاجة لجرعات إنسولين مضاعفة.</span>
+                    </div>
+
+                    <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border-right: 4px solid var(--success);">
+                        <strong style="display: block; margin-bottom: 5px; color: var(--success);">3. جودة النوم وأثرها على السكر</strong>
+                        <span style="font-size: 0.85rem; line-height: 1.5; color: var(--text-main);">الاضطراب وقلة النوم ترفع هرمون الكورتيزول، مما يؤدي مباشرة إلى مقاومة الإنسولين وارتفاع القراءات الصباحية. احرص على نوم عميق لمدة 7-8 ساعات.</span>
+                    </div>
+
+                    <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border-right: 4px solid var(--danger);">
+                        <strong style="display: block; margin-bottom: 5px; color: var(--danger);">4. العناية بالقدمين يومياً</strong>
+                        <span style="font-size: 0.85rem; line-height: 1.5; color: var(--text-main);">فحص القدمين بانتظام وتجنب المشي حافياً يحمي مرضى السكري من التقرحات ومشاكل الأعصاب الطرفية المبكرة.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- صورة صفحة الإرشادات (أطفال يستمتعون بووقتهم في الطبيعة) -->
+            <div class="card" style="text-align: center; padding: 15px;">
+                <div class="card-title" style="justify-content: center;"><i class="fa-solid fa-seedling" style="color: #0d9488;"></i><span>ثقافتك الصحية تصنع حياة أطفالنا</span></div>
+                <div style="border-radius: 12px; overflow: hidden; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.08);">
+                    <img src="https://images.unsplash.com/photo-1471286174890-9c112ffca5b4?auto=format&fit=crop&w=600&q=80" alt="أطفال في الطبيعة" style="width: 100%; height: 160px; object-fit: cover; display: block;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 5: About & Guidelines -->
+        <div id="page-edu" class="page">
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-circle-info"></i><span>حول التطبيق (حقوق التأليف)</span></div>
+                <div style="font-size:0.9rem; line-height:1.6; margin-bottom:15px;">
+                    <p><strong>اسم التطبيق:</strong> السكري تحت المراقبة</p>
+                    <p><strong>المطور:</strong> سمير مصطفى</p>
+                    <p style="margin-top: 10px; color: var(--text-muted); font-size: 0.85rem;">© جميع الحقوق محفوظة للمطور سمير مصطفى.</p>
+                </div>
+            </div>
+
+            <!-- صورة صفحة حول التطبيق (لحظات طفولة دافئة) -->
+            <div class="card" style="text-align: center; padding: 15px;">
+                <div class="card-title" style="justify-content: center;"><i class="fa-solid fa-heart-pulse" style="color: #0d9488;"></i><span>من أجل مستقبل أصح لأطفالنا وعائلاتنا</span></div>
+                <div style="border-radius: 12px; overflow: hidden; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.08);">
+                    <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=600&q=80" alt="أطفال وعائلة سعيدة" style="width: 100%; height: 160px; object-fit: cover; display: block;">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation Bottom Bar (5 Items) -->
+    <div class="nav-bar">
+        <button class="nav-item active" onclick="switchPage('home', this)">
+            <i class="fa-solid fa-house"></i>
+            <span>الرئيسية</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('log', this)">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span>السجل</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('meds', this)">
+            <i class="fa-solid fa-pills"></i>
+            <span>الأدوية</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('tips', this)">
+            <i class="fa-solid fa-book-medical"></i>
+            <span>الإرشادات</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('edu', this)">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>حول</span>
+        </button>
+    </div>
+
+    <script>
+        function switchPage(pageId, element) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            if (element) {
+                element.classList.add('active');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        let logs = JSON.parse(localStorage.getItem('diabetes_logs')) || [];
+        let meds = JSON.parse(localStorage.getItem('diabetes_meds')) || [];
+        let waterCount = parseInt(localStorage.getItem('diabetes_water')) || 0;
+
+        window.onload = function() {
+            updateLogUI();
+            updateMedsUI();
+            updateWaterUI();
+            checkDashboardDefault();
+        };
+
+        function checkDashboardDefault() {
+            if (logs.length > 0) {
+                const lastSugar = logs.find(l => l.type === 'sugar');
+                if(lastSugar) {
+                    updateDashboard(lastSugar.value + ' ملغ/دسل', lastSugar.status, lastSugar.badgeClass);
+                    return;
+                }
+            }
+            updateDashboard('- <span style="font-size: 0.9rem;">ملغ/دسل</span>', 'لا توجد بيانات', 'badge-normal');
+        }
+
+        function addWater() {
+            if (waterCount < 15) waterCount++;
+            localStorage.setItem('diabetes_water', waterCount);
+            updateWaterUI();
+        }
+        function resetWater() {
+            waterCount = 0;
+            localStorage.setItem('diabetes_water', waterCount);
+            updateWaterUI();
+        }
+        function updateWaterUI() {
+            const waterEl = document.getElementById('water-count');
+            if(waterEl) {
+                waterEl.innerText = `${waterCount} / 8 أكواب`;
+            }
+        }
+
+        function calculateBMI() {
+            const weight = parseFloat(document.getElementById('bmi-weight').value);
+            const heightCm = parseFloat(document.getElementById('bmi-height').value);
+            const resultDiv = document.getElementById('bmi-result');
+
+            if (!weight || !heightCm) {
+                resultDiv.innerHTML = `<span style='color:var(--danger);'>يرجى إدخال قيم صحيحة للوزن والطول</span>`;
+                return;
+            }
+            const heightM = heightCm / 100;
+            const bmi = (weight / (heightM * heightM)).toFixed(1);
+            let category = "";
+            let color = "";
+
+            if (bmi < 18.5) { category = "نقص في الوزن"; color = "#f59e0b"; }
+            else if (bmi < 25) { category = "وزن مثالي"; color = "#10b981"; }
+            else if (bmi < 30) { category = "زيادة في الوزن"; color = "#f59e0b"; }
+            else { category = "سمنة (مؤشر خطر)"; color = "#ef4444"; }
+
+            resultDiv.innerHTML = `مؤشر الكتلة: <span style="color:${color}">${bmi}</span> (${category})`;
+
+            const logItem = {
+                type: 'bmi',
+                title: `مؤشر كتلة الجسم: ${bmi} (${category}) [الوزن: ${weight}كغ، الطول: ${heightCm}سم]`,
+                date: new Date().toLocaleDateString('ar-SA') + ' - ' + new Date().toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'})
+            };
+            logs.unshift(logItem);
+            localStorage.setItem('diabetes_logs', JSON.stringify(logs));
+            updateLogUI();
+            alert("تم حساب وحفظ مؤشر كتلة الجسم في السجل بنجاح!");
+        }
+
+        function calculateA1C() {
+            const avg = parseFloat(document.getElementById('avg-sugar').value);
+            const resDiv = document.getElementById('a1c-result');
+            if(!avg) {
+                resDiv.innerHTML = `<span style='color:var(--danger);'>يرجى إدخال متوسط السكر</span>`;
+                return;
+            }
+            const a1c = ((avg + 46.7) / 28.7).toFixed(1);
+            resDiv.innerHTML = `التراكمي التقريبي (eAG): <span style="color:var(--primary-color);">${a1c}%</span>`;
+
+            const logItem = {
+                type: 'a1c',
+                title: `السكر التراكمي التقريبي (eAG): ${a1c}% (بناءً على متوسط قراءات: ${avg})`,
+                date: new Date().toLocaleDateString('ar-SA') + ' - ' + new Date().toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'})
+            };
+            logs.unshift(logItem);
+            localStorage.setItem('diabetes_logs', JSON.stringify(logs));
+            updateLogUI();
+            alert("تم حساب وحفظ السكر التراكمي في السجل بنجاح!");
+        }
+
+        function addSugarLog() {
+            const valueInput = document.getElementById('sugar-value');
+            const timeSelect = document.getElementById('sugar-time');
+            const value = parseInt(valueInput.value);
+            const timeType = timeSelect.value;
+            const timeText = timeSelect.options[timeSelect.selectedIndex].text;
+
+            if (!value) {
+                alert("يرجى إدخال قيمة صحيحة لمستوى السكر");
+                return;
+            }
+
+            let status = "طبيعي";
+            let badgeClass = "badge-normal";
+
+            if (timeType === "fasting") {
+                if (value < 70) { status = "هبوط"; badgeClass = "badge-danger"; }
+                else if (value >= 100 && value < 126) { status = "ما قبل السكري"; badgeClass = "badge-warning"; }
+                else if (value >= 126) { status = "ارتفاع"; badgeClass = "badge-danger"; }
+            } else {
+                if (value < 70) { status = "هبوط"; badgeClass = "badge-danger"; }
+                else if (value >= 140 && value < 200) { status = "ما قبل السكري"; badgeClass = "badge-warning"; }
+                else if (value >= 200) { status = "ارتفاع"; badgeClass = "badge-danger"; }
+            }
+
+            const log = { 
+                type: 'sugar',
+                value, 
+                timeText, 
+                status, 
+                badgeClass, 
+                date: new Date().toLocaleDateString('ar-SA') + ' - ' + new Date().toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'}) 
+            };
+            
+            logs.unshift(log);
+            localStorage.setItem('diabetes_logs', JSON.stringify(logs));
+
+            updateLogUI();
+            updateDashboard(value + ' ملغ/دسل', status, badgeClass);
+            
+            valueInput.value = "";
+            alert("تم حفظ قراءة السكر بنجاح في قاعدة البيانات");
+        }
+
+        function clearSugarLogs() {
+            if (confirm("هل أنت متأكد من رغبتك في مسح جميع قراءات السكري المسجلة؟")) {
+                logs = logs.filter(l => l.type !== 'sugar');
+                localStorage.setItem('diabetes_logs', JSON.stringify(logs));
+                updateLogUI();
+                checkDashboardDefault();
+                alert("تم مسح سجل قراءات السكري بنجاح.");
+            }
+        }
+
+        function clearCalculatorLogs() {
+            if (confirm("هل أنت متأكد من رغبتك في مسح سجل الحاسبات الطبية (BMI والتراكمي)؟")) {
+                logs = logs.filter(l => l.type === 'sugar');
+                localStorage.setItem('diabetes_logs', JSON.stringify(logs));
+                updateLogUI();
+                alert("تم مسح سجل الحاسبات بنجاح.");
+            }
+        }
+
+        function updateLogUI() {
+            const container = document.getElementById('log-container');
+            if (!container) return;
+
+            if (logs.length === 0) {
+                container.innerHTML = `<p style="color:var(--text-muted); text-align:center; font-size:0.9rem;">لم يتم تسجيل بيانات بعد.</p>`;
+                return;
+            }
+
+            container.innerHTML = logs.map(l => {
+                if(l.type === 'sugar') {
+                    return `
+                        <div class="log-item">
+                            <div>
+                                <strong>${l.value} ملغ/دسل</strong> <span style="font-size:0.8rem; color:var(--text-muted);">(${l.timeText})</span>
+                            </div>
+                            <div>
+                                <span style="font-size:0.75rem; color:var(--text-muted); margin-left:8px;">${l.date}</span>
+                                <span class="status-badge ${l.badgeClass}">${l.status}</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="log-item">
+                            <div>
+                                <strong><i class="fa-solid fa-calculator" style="color:var(--primary-color);"></i> ${l.title}</strong>
+                            </div>
+                            <div>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">${l.date}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        function updateDashboard(valueText, status, badgeClass) {
+            const dashSugar = document.getElementById('dash-sugar');
+            const statusSpan = document.getElementById('dash-status');
+            if(dashSugar) dashSugar.innerHTML = valueText;
+            if(statusSpan) {
+                statusSpan.innerText = status;
+                statusSpan.className = `status-badge ${badgeClass}`;
+            }
+        }
+
+        function addMedication() {
+            const nameInput = document.getElementById('med-name');
+            const doseInput = document.getElementById('med-dose');
+            const timeInput = document.getElementById('med-time');
+            
+            const name = nameInput.value;
+            const dose = doseInput.value;
+            const time = timeInput.value;
+
+            if(!name || !time) {
+                alert("يرجى إدخال اسم الدواء ووقت الجرعة");
+                return;
+            }
+
+            const med = { name, dose, time };
+            meds.push(med);
+            localStorage.setItem('diabetes_meds', JSON.stringify(meds));
+
+            updateMedsUI();
+            nameInput.value = '';
+            doseInput.value = '';
+            timeInput.value = '';
+            alert("تم حفظ موعد الدواء بنجاح");
+        }
+
+        function updateMedsUI() {
+            const container = document.getElementById('meds-container');
+            if(!container) return;
+
+            if(meds.length === 0) {
+                container.innerHTML = `<p style="color:var(--text-muted); text-align:center; font-size:0.9rem;">لا توجد أدوية مسجلة حالياً.</p>`;
+                return;
+            }
+
+            container.innerHTML = meds.map(m => `
+                <div class="log-item">
+                    <div>
+                        <strong><i class="fa-solid fa-pills" style="color:var(--primary-color);"></i> ${m.name}</strong> 
+                        <span style="font-size:0.85rem; color:var(--text-muted);">(${m.dose || 'بدون جرعة محددة'})</span>
+                    </div>
+                    <div>
+                        <span class="status-badge badge-warning"><i class="fa-regular fa-clock"></i> ${m.time}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function exportTXT() {
+            if(logs.length === 0) {
+                alert("لا توجد بيانات لتصديرها.");
+                return;
+            }
+            let content = "--- السكري تحت المراقبة - تقرير السجل الطبي ---\n\n";
+            logs.forEach((l, index) => {
+                if(l.type === 'sugar') {
+                    content += `${index + 1}. [سجل السكر] القيمة: ${l.value} ملغ/دسل | التوقيت: ${l.timeText} | الحالة: ${l.status} | التاريخ: ${l.date}\n`;
+                } else {
+                    content += `${index + 1}. [حاسبة طبية] ${l.title} | التاريخ: ${l.date}\n`;
+                }
+            });
+
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'diabetes_monitoring_report.txt';
+            link.click();
+        }
+    </script>
+</body>
+</html>
+
